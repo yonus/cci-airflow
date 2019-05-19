@@ -80,8 +80,9 @@ class VoyageEtlBase:
     
     
     def startProcessOperator(self,**kwargs):
-        self.startProcessOperator()
+        self.createLogTableIfNotExist()
         kwargs['ti'].xcom_push(key='start_time', value=datetime.now())
+        
 
     def successLogOperator(self,**kwargs):
         ti = kwargs['ti']
@@ -143,7 +144,7 @@ class VoyageEtlBase:
     def getLastSuccessfullEtlTime(self,etlTableName):
         query = "SELECT start_time FROM " + self.LOG_TABLE_NAME + " WHERE status = 'S' AND table_name ='" + etlTableName + "' "+ " ORDER BY start_time DESC LIMIT 1"
         bigQueryCursor = self.createBigQueryCursor()
-        bigQueryCursor.execute(query);
+        bigQueryCursor.execute(query)
         resultSet = bigQueryCursor.fetchone()
         if resultSet is None:
            return None
