@@ -74,7 +74,7 @@ class VoyageEtlBase:
             dag=dag
         )
 
-        success_log_operator = PythonOperator(task_id='success_log_operator', python_callable=self.successLog, dag=dag)
+        success_log_operator = PythonOperator(task_id='success_log_operator', python_callable=self.successLogOperator, dag=dag)
         start_process_operator >> t1 >> t2 >> success_log_operator
         return dag
     
@@ -83,6 +83,21 @@ class VoyageEtlBase:
         self.startProcessOperator()
         kwargs['ti'].xcom_push(key='start_time', value=datetime.now())
 
+    def successLogOperator(self,**kwargs):
+        ti = kwargs['ti']
+        start_time = ti.xcom_pull(key=None, task_ids='start_process_operator')
+        end_time = datetime.now()
+        rows = []
+        rows.append({"table_name":self.gbq_table,"start_time":start_time.isoformat(), "end_time":end_time.isoformat(),"status":"S","log_time":end_time.isoformat()})
+        self.insertLog(rows)
+
+    def failLog(self , **kwargs):
+        ti = kwargs['ti']
+        start_time = ti.xcom_pull(key=None, task_ids='start_process_operator')
+        log_time = datetime.now()
+        rows = []
+        rows.append({"table_name":self.gbq_table,"start_time":start_time.isoformat() ,"status":"F" ,"log_time":log_time.isoformat()})
+        self.insertLog(rows)
 
 
     def getBaseQuery(self):
@@ -118,31 +133,27 @@ class VoyageEtlBase:
 
             cursor.create_empty_table(self.project_id,self.gbq_dataset,self.LOG_TABLE_NAME,schema_fields)
 
-    def successLog(self,**kwargs):
-        ti = kwargs['ti']
-        start_time = ti.xcom_pull(key=None, task_ids='start_process_operator')
-        end_time = datetime.now()
-        rows = []
-        rows.append({"table_name":self.gbq_table,"start_time":start_time.isoformat(), "end_time":end_time.isoformat(),"status":"S","log_time":end_time.isoformat()})
-        self.insertLog(rows)
-
-    def failLog(self , **kwargs):
-        ti = kwargs['ti']
-        start_time = ti.xcom_pull(key=None, task_ids='start_process_operator')
-        log_time = datetime.now()
-        rows = []
-        rows.append({"table_name":self.gbq_table,"start_time":start_time.isoformat() ,"status":"F" ,"log_time":log_time.isoformat()})
-        self.insertLog(rows)
+   
    
     def insertLog(self, rows):
         cursor = self.createBigQueryCursor()
         cursor.insert_all(self.project_id, self.gbq_dataset, self.LOG_TABLE_NAME,rows)
         
-
-
+    
+    def getLastSuccessfullEtlTime(self,etlTableName):
+        query = "SELECT start_time FROM " + self.LOG_TABLE_NAME + " WHERE status = 'S' AND table_name ='" + etlTableName + "' "+ " ORDER BY start_time DESC LIMIT 1"
+        bigQueryCursor = self.createBigQueryCursor()
+        bigQueryCursor.execute(query);
+        resultSet = bigQueryCursor.fetchone()
+        if resultSet is None:
+           return None
+        else:
+            print("last successfull etl time for table %s is %s " %(etlTableName,resultSet["start_time"]))
+            return resultSet["start_time"]
 
     def postProcess(self,startDate, endDate, status):
         print("post process called")
         
+
 
         

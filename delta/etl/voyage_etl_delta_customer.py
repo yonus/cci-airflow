@@ -22,12 +22,15 @@ class VoyageEtlDeltaCustomer(VoyageEtlBase):
         
 
      def getQueryCriteria(self):
-         return ""
+         lastSucessfullEtlTime = self.getLastSuccessfullEtlTime(self.gbq_table)
+         if lastSucessfullEtlTime is None:
+            return ""
+         else:
+            " WHERE upDate > " + lastSucessfullEtlTime
+         
 
-     def __getLastEtlDeltaTime(self):
-        isDeltaTableExist = self.getCurrentBigQueryHook().table_exists(self.project_id,self.gbq_dataset,self.LOG_TABLE_NAME)
-        if isDeltaTableExist is True:
-           return ""
+     
+       
 
       
 
