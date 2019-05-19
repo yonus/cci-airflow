@@ -1,0 +1,7 @@
+dags:
+  - dag_id: "cci_voyage_tcust_delta"
+    table_name: "tCust"
+    query: "SELECT * FROM [Voyage].[dbo].[tCust]"
+    gcs_bucket: "cci_staging_data"
+    gbq_dataset: "cci_staging_data"
+    gbq_table: "tcust_delta"
