@@ -1,9 +1,10 @@
 from abc import ABC , abstractmethod
 from datetime import timedelta,datetime
+
 from airflow import models
 from airflow.utils.dates import days_ago
 from airflow.contrib.operators.gcs_to_bq import GoogleCloudStorageToBigQueryOperator
-from utils.dags_utils_mssql_to_gcs_operator import MsSqlToGoogleCloudStorageOperator
+from delta.utils.dags_utils_mssql_to_gcs_operator import MsSqlToGoogleCloudStorageOperator
 from airflow.contrib.hooks.bigquery_hook import BigQueryHook,BigQueryCursor
 from airflow.operators.python_operator import PythonOperator
 
@@ -13,7 +14,7 @@ class VoyageEtlBase:
     def __init__(self,dag_id,
         project_id,
         table_name,
-        query, 
+        query,  
         gcs_bucket,
         gbq_dataset,
         gbq_table,

@@ -1,4 +1,4 @@
-from datetime.timedelta import days_ago
+from airflow.utils.dates import days_ago
 from delta.base.voyage_etl_base import VoyageEtlBase
 from airflow.contrib.hooks.bigquery_hook import BigQueryHook,BigQueryCursor
 class VoyageEtlDeltaCustomer(VoyageEtlBase):
@@ -7,7 +7,7 @@ class VoyageEtlDeltaCustomer(VoyageEtlBase):
         project_id,
         table_name,
         query, 
-        gcs_bucket,
+        gcs_bucket, 
         gbq_dataset,
         gbq_table,
         mssql_conn_id="cci_voyage_sql",
