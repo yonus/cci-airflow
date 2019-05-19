@@ -1,11 +1,11 @@
 from enum import Enum
-from etl.voyage_etl_delta_customer import VoyageEtlDeltaCustomer
+from delta.etl.voyage_etl_delta_customer import VoyageEtlDeltaCustomer
 
 class DagId(Enum):
     CCI_VAYOGE_TCUST_DELTA = "cci_voyage_tcust"
     
 
-class VoyageEtlFactory:
+class VoyageEtlFactory: 
     
     @staticmethod
     def factory(dagId , config):

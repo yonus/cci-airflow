@@ -97,6 +97,9 @@ class VoyageEtlBase:
     def createBigQueryHook(self):
       bigQueryHook = BigQueryHook(self.bigquery_conn_id)
       return bigQueryHook
+    
+    def getCurrentBigQueryHook(self):
+        return self.__bigQueryHook
 
     def createBigQueryCursor(self):
        connection = self.__bigQueryHook.get_conn()
@@ -107,7 +110,7 @@ class VoyageEtlBase:
         if isDeltaTableExist is False:
             cursor = self.createBigQueryCursor()
             schema_fields=[{"name": "table_name", "type": "STRING", "mode": "REQUIRED"},
-                           {"name": "start_time", "type": "DATETIME", "mode": "REQUIRED"},
+                           {"name": "start_time", "type": "DATETIME", "mode": "NULLABLE"},
                            {"name": "end_time", "type": "DATETIME", "mode": "NULLABLE"},
                            {"name": "status", "type": "DATETIME", "mode": "REQUIRED"},
                            {"name": "log_time", "type": "DATETIME", "mode": "REQUIRED"}]

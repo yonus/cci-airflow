@@ -1,10 +1,10 @@
-from datetime import timedelta.days_ago
-from base.voyage_etl_base import VoyageEtlBase
+from datetime.timedelta import days_ago
+from delta.base.voyage_etl_base import VoyageEtlBase
 from airflow.contrib.hooks.bigquery_hook import BigQueryHook,BigQueryCursor
 class VoyageEtlDeltaCustomer(VoyageEtlBase):
 
      def __init__(self,dag_id,
-        project_id
+        project_id,
         table_name,
         query, 
         gcs_bucket,
@@ -25,9 +25,9 @@ class VoyageEtlDeltaCustomer(VoyageEtlBase):
          return ""
 
      def __getLastEtlDeltaTime(self):
-        isDeltaTableExist = self.bigQueryHook.table_exists(self.project_id,self.gbq_dataset,LOG_TABLE_NAME)
+        isDeltaTableExist = self.getCurrentBigQueryHook().table_exists(self.project_id,self.gbq_dataset,self.LOG_TABLE_NAME)
         if isDeltaTableExist is True:
-           
+           return ""
 
       
 
