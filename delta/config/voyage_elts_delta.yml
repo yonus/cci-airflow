@@ -5,3 +5,4 @@ dags:
     gcs_bucket: "cci_staging_data"
     gbq_dataset: "cci_staging_data"
     gbq_table: "tcust_delta"
+    project_id : "cci-datalake-sandbox"

@@ -46,9 +46,9 @@ class VoyageEtlBase:
      
     def create_dag(self):
         
-        dag = models.DAG(dag_id=self.dag_id, start_date=self.start_date, schedule_interval=self.schedule_interval,on_failure_callback=self.failLog)
+        dag = models.DAG(dag_id=self.dag_id, start_date=self.start_date, schedule_interval=self.schedule_interval,on_failure_callback=self.failLog, catchup=False)
         start_process_operator = PythonOperator(task_id='start_process_operator', python_callable=self.startProcessOperator, dag=dag)
-
+        """
         t1 = MsSqlToGoogleCloudStorageOperator(
             task_id="voyage_to_gcs",
             sql=self.getQuery(),
@@ -73,9 +73,9 @@ class VoyageEtlBase:
             bigquery_conn_id=self.bigquery_conn_id,
             dag=dag
         )
-
+        """
         success_log_operator = PythonOperator(task_id='success_log_operator', python_callable=self.successLogOperator, dag=dag)
-        start_process_operator >> t1 >> t2 >> success_log_operator
+        start_process_operator >> success_log_operator
         return dag
     
     
